@@ -1,60 +1,54 @@
-import { Text, type TextProps, StyleSheet } from 'react-native';
+import { StyleSheet, Text, type TextProps } from "react-native"
+import useThemeColors from "@/hooks/useThemeColors"
+import { Colors } from "@/constants/Colors"
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+// On met le style ici pour definir le prop variant plus bas en "keyof
+const styles = StyleSheet.create({
+    body3: {
+        fontSize: 10,
+        lineHeight: 16
+    },
+    body1: {
+        fontSize: 14,
+        lineHeight: 16
+    },
+    body2: {
+        fontSize: 12,
+        lineHeight: 16
+    },
+    caption: {
+        fontSize: 8,
+        lineHeight: 12
+    },
+    headline: {
+        fontWeight: 'bold',
+        fontSize: 24,
+        lineHeight: 32
+    },
+    subtitle1: {
+        fontWeight: 'bold',
+        fontSize: 14,
+        lineHeight: 16
+    },
+    subtitle2: {
+        fontWeight: 'bold',
+        fontSize: 12,
+        lineHeight: 16
+    },
+    subtitle3: {
+        fontWeight: 'bold',
+        fontSize: 10,
+        lineHeight: 16
+    }
+})
 
-export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
-};
-
-export function ThemedText({
-  style,
-  lightColor,
-  darkColor,
-  type = 'default',
-  ...rest
-}: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-
-  return (
-    <Text
-      style={[
-        { color },
-        type === 'default' ? styles.default : undefined,
-        type === 'title' ? styles.title : undefined,
-        type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-        type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
-        style,
-      ]}
-      {...rest}
-    />
-  );
+type Props = TextProps & { // TextProps = n'importe quelle props accepté par le composant Text
+    variant?: keyof typeof styles,
+    color?: keyof typeof Colors["light"],
 }
 
-const styles = StyleSheet.create({
-  default: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  defaultSemiBold: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '600',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 32,
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
-  },
-});
+export function ThemedText({variant, color, style, ...rest}: Props) {
+    const colors = useThemeColors();
+    return <Text style={[styles[variant ?? 'body3'], {color: colors[color ?? 'grayDark']}, style]} {...rest}/>
+}
+
