@@ -1,4 +1,6 @@
 import { StyleSheet, Text, type TextProps } from "react-native"
+import useThemeColors from "@/hooks/useThemeColors"
+import { Colors } from "@/constants/Colors"
 
 // On met le style ici pour definir le prop variant plus bas en "keyof
 const styles = StyleSheet.create({
@@ -42,10 +44,11 @@ const styles = StyleSheet.create({
 
 type Props = TextProps & { // TextProps = n'importe quelle props accepté par le composant Text
     variant?: keyof typeof styles,
-    color?: string,
+    color?: keyof typeof Colors["light"],
 }
 
 export function ThemedText({variant, color, ...rest}: Props) {
-    return <Text style={styles[variant ?? 'body3']} {...rest}/> // Si variant n'est pas defini, on utilise body3
+    const colors = useThemeColors();
+    return <Text style={[styles[variant ?? 'body3'], {color: colors[color ?? 'grayDark']}]} {...rest}/>
 }
 

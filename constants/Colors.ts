@@ -1,13 +1,13 @@
-export const colors = {
+export const Colors = {
     light: {
-        primary: '#DC0A2D ',
+        primary: '#DC0A2D',
         grayDark: '#212121',
         grayLight: '#E0E0E0',
         grayWhite: '#FFFFFF',
         grayBackground: '#EFEFEF'
     },
     dark: {
-        primary: '#DC0A2D ',
+        primary: '#DC0A2D',
         grayDark: '#212121',
         grayLight: '#E0E0E0',
         grayWhite: '#FFFFFF',
