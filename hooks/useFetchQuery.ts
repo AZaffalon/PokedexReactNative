@@ -29,6 +29,14 @@ type API = {
       };
     }[];
   };
+  "/pokemon-species/[id]": {
+    flavor_text_entries: {
+      flavor_text: string;
+      language: {
+        name: string;
+      };
+    }[];
+  };
 };
 
 export function useFetchQuery<T extends keyof API>(
@@ -44,7 +52,7 @@ export function useFetchQuery<T extends keyof API>(
   return useQuery({
     queryKey: [localUrl],
     queryFn: async () => {
-      await wait(1);
+      // await wait(1);
       return fetch(localUrl, {
         headers: {
           Accept: "application/json",
