@@ -2,6 +2,7 @@ export const Colors = {
   light: {
     primary: "#DC0A2D",
     grayDark: "#212121",
+    grayMedium: "#666666",
     grayLight: "#E0E0E0",
     grayWhite: "#FFFFFF",
     grayBackground: "#EFEFEF",
@@ -9,6 +10,7 @@ export const Colors = {
   dark: {
     primary: "#DC0A2D",
     grayDark: "#212121",
+    grayMedium: "#666666",
     grayLight: "#E0E0E0",
     grayWhite: "#FFFFFF",
     grayBackground: "#EFEFEF",
