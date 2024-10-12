@@ -10,13 +10,17 @@ type Props = ViewProps & {
 };
 
 function statShortName(name: string): string {
-  return name
-    .replaceAll("special", "S")
-    .replaceAll("-", "")
-    .replaceAll("attack", "ATK")
-    .replaceAll("defense", "DEF")
-    .replaceAll("speed", "SPD")
-    .toUpperCase();
+  const replacements: { [key: string]: string } = {
+    hp: "HP",
+    special: "S",
+    attack: "ATK",
+    defense: "DEF",
+    speed: "SPD",
+    "-": "",
+  };
+  return name.replace(/hp|special|attack|defense|speed|-+/gi, (matched) => {
+    return replacements[matched] || "";
+  });
 }
 
 export function PokemonStat({ style, name, value, color, ...rest }: Props) {
