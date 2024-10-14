@@ -11,6 +11,11 @@ import { Row } from "@/components/Row";
 import { SortButton } from "@/components/SortButton";
 import { RootView } from "@/components/RootView";
 
+type Pokemon = {
+  name: string;
+  id: number;
+};
+
 export default function Index() {
   const colors = useThemeColors();
   const { data, isFetching, fetchNextPage } = useInfiniteFetchQuery(
@@ -18,7 +23,7 @@ export default function Index() {
   );
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"id" | "name">("id");
-  const pokemons =
+  const pokemons: Pokemon[] =
     data?.pages.flatMap((page) =>
       page.results.map((r) => ({
         name: r.name,
@@ -33,6 +38,10 @@ export default function Index() {
         )
       : pokemons),
   ].sort((a, b) => (a[sort] < b[sort] ? -1 : 1));
+
+  const renderCard = ({ item }: { item: Pokemon }) => (
+    <PokemonCard id={item.id} name={item.name} style={{ flex: 1 / 3 }} />
+  );
 
   return (
     <RootView>
@@ -55,17 +64,11 @@ export default function Index() {
           numColumns={3}
           contentContainerStyle={[styles.gridGap, styles.list]}
           columnWrapperStyle={styles.gridGap}
-          ListHeaderComponent={
+          ListFooterComponent={
             isFetching ? <ActivityIndicator color={colors.primary} /> : null
           }
+          renderItem={renderCard}
           onEndReached={search ? undefined : () => fetchNextPage()}
-          renderItem={({ item }) => (
-            <PokemonCard
-              id={item.id}
-              name={item.name}
-              style={{ flex: 1 / 3 }}
-            />
-          )}
           keyExtractor={(item) => item.id.toString()}
         />
       </Card>
