@@ -1,7 +1,15 @@
 import { StyleSheet, View, ViewProps } from "react-native";
 import { Row } from "../Row";
 import { ThemedText } from "../ThemedText";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+  ReduceMotion,
+} from "react-native-reanimated";
 import useThemeColors from "@/hooks/useThemeColors";
+import { useEffect } from "react";
 
 type Props = ViewProps & {
   name: string;
@@ -10,17 +18,41 @@ type Props = ViewProps & {
 };
 
 function statShortName(name: string): string {
-  return name
-    .replaceAll("special", "S")
-    .replaceAll("-", "")
-    .replaceAll("attack", "ATK")
-    .replaceAll("defense", "DEF")
-    .replaceAll("speed", "SPD")
-    .toUpperCase();
+  const replacements: { [key: string]: string } = {
+    hp: "HP",
+    special: "S",
+    attack: "ATK",
+    defense: "DEF",
+    speed: "SPD",
+    "-": "",
+  };
+  return name.replace(/hp|special|attack|defense|speed|-+/gi, (matched) => {
+    return replacements[matched] || "";
+  });
 }
 
 export function PokemonStat({ style, name, value, color, ...rest }: Props) {
   const colors = useThemeColors();
+  const sharedValue = useSharedValue(value);
+  const barInnerStyle = useAnimatedStyle(() => {
+    return {
+      flex: sharedValue.value,
+    };
+  });
+  const barBackgroundStyle = useAnimatedStyle(() => {
+    return {
+      flex: 255 - sharedValue.value,
+    };
+  });
+
+  useEffect(() => {
+    sharedValue.value = withTiming(value, {
+      duration: 700,
+      easing: Easing.out(Easing.quad),
+      reduceMotion: ReduceMotion.System,
+    });
+  }, [value]);
+
   return (
     <Row gap={8} style={[style, styles.root]} {...rest}>
       <View style={[styles.name, { borderColor: colors.grayLight }]}>
@@ -32,15 +64,16 @@ export function PokemonStat({ style, name, value, color, ...rest }: Props) {
         <ThemedText>{value.toString().padStart(3, "0")}</ThemedText>
       </View>
       <Row style={styles.bar}>
-        <View
-          style={[styles.barInner, { flex: value, backgroundColor: color }]}
-        ></View>
-        <View
+        <Animated.View
+          style={[styles.barInner, { backgroundColor: color }, barInnerStyle]}
+        />
+        <Animated.View
           style={[
             styles.barBackground,
-            { flex: 255 - value, backgroundColor: color },
+            { backgroundColor: color },
+            barBackgroundStyle,
           ]}
-        ></View>
+        />
       </Row>
     </Row>
   );
