@@ -7,14 +7,16 @@ import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import {
+  basePokemonStats,
   formatSize,
   formatWeight,
   getPokemonArtwork,
 } from "@/functions/pokemon";
 import { useFetchQuery } from "@/hooks/useFetchQuery";
 import useThemeColors from "@/hooks/useThemeColors";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Audio } from "expo-av";
 
 export default function Pokemon() {
   const colors = useThemeColors();
@@ -31,8 +33,24 @@ export default function Pokemon() {
     ?.flavor_text.replaceAll(/[\n\f]/g, " ")
     .replaceAll(/pokémon/gi, "Pokémon");
 
+  const stats = pokemon?.stats ?? basePokemonStats;
+
+  const onImagePress = async () => {
+    const cry = pokemon?.cries.latest;
+    if (!cry) {
+      return;
+    }
+    const { sound } = await Audio.Sound.createAsync(
+      {
+        uri: cry,
+      },
+      { shouldPlay: true }
+    );
+    sound.playAsync();
+  };
+
   return (
-    <RootView style={{ backgroundColor: colorType }}>
+    <RootView backgroundColor={colorType}>
       <View>
         <Image
           style={styles.pokeball}
@@ -59,14 +77,18 @@ export default function Pokemon() {
           </ThemedText>
         </Row>
         <View style={styles.body}>
-          <Image
-            style={styles.artwork}
-            source={{ uri: getPokemonArtwork(params.id) }}
-            width={200}
-            height={200}
-          />
+          <Row style={styles.imageRow}>
+            <Pressable onPress={onImagePress}>
+              <Image
+                style={styles.artwork}
+                source={{ uri: getPokemonArtwork(params.id) }}
+                width={200}
+                height={200}
+              />
+            </Pressable>
+          </Row>
           <Card style={styles.card}>
-            <Row gap={16}>
+            <Row gap={16} style={{ height: 20 }}>
               {types.map((type) => (
                 <PokemonType name={type.type.name} key={type.type.name} />
               ))}
@@ -113,7 +135,7 @@ export default function Pokemon() {
               Base Stats
             </ThemedText>
             <View style={{ alignSelf: "stretch" }}>
-              {pokemon?.stats.map((stat) => (
+              {stats.map((stat) => (
                 <PokemonStat
                   key={stat.stat.name}
                   name={stat.stat.name}
@@ -146,12 +168,12 @@ const styles = StyleSheet.create({
     right: 8,
     top: 8,
   },
-  artwork: {
-    alignSelf: "center",
+  imageRow: {
     position: "absolute",
     top: -140,
     zIndex: 2,
   },
+  artwork: {},
   body: {
     marginTop: 144,
   },
